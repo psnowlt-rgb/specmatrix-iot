@@ -1,180 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SpecMatrix IoT - Parts Specification Matrix</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#e2e8f0;background-color:#020617;background-image:linear-gradient(rgba(34,211,238,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.05) 1px,transparent 1px);background-size:32px 32px;background-attachment:fixed}
+.scrim{min-height:100vh;background:rgba(15,23,42,.35)}
+.wrap{max-width:1152px;margin:0 auto;padding:40px 16px;display:flex;flex-direction:column;gap:24px}
+.panel{border:1px solid rgba(6,182,212,.3);border-radius:8px;background:rgba(2,6,23,.85)}
+header.panel{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px}
+.brand{display:flex;align-items:center;gap:12px}
+.ico{padding:8px;border:1px solid rgba(6,182,212,.3);border-radius:6px;background:rgba(15,23,42,.9);display:flex}
+svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ico svg{color:#22d3ee}
+h1{margin:0;font-size:18px;color:#fff;line-height:1.2}
+.sub{margin:2px 0 0;font-size:12px;color:#94a3b8}
+button{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(6,182,212,.4);background:rgba(15,23,42,.9);color:#67e8f9;border-radius:6px;padding:8px 16px;font-size:14px;font-weight:500;cursor:pointer}
+button:hover{background:rgba(8,51,68,.5)}
+button svg{width:16px;height:16px}
+:focus-visible{outline:2px solid #22d3ee;outline-offset:2px}
+.sel{padding:20px}
+label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:8px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+select{flex:1;min-width:260px;border:1px solid rgba(6,182,212,.3);background:#0f172a;color:#fff;border-radius:6px;padding:10px 12px;font-size:14px}
+.badge{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(6,182,212,.4);background:rgba(8,51,68,.4);color:#67e8f9;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.badge svg{width:14px;height:14px}
+.table{overflow:hidden}
+.grid{display:grid;grid-template-columns:1fr 1fr}
+.th{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid rgba(6,182,212,.3)}
+.th.m{background:linear-gradient(to right,#020617,#0c1f2a,#0f172a)}
+.th.o{background:linear-gradient(to right,#0f172a,#101b24,#020617);border-left:1px solid rgba(30,41,59,.8)}
+.dot{width:8px;height:8px;border-radius:50%}
+.m .dot{background:#22d3ee;box-shadow:0 0 6px #22d3ee}
+.o .dot{background:#cbd5e1}
+.tt{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.m .tt{color:#22d3ee}.o .tt{color:#cbd5e1}
+.car{font-size:10px}.m .car{color:#22d3ee}.o .car{color:#94a3b8}
+.cnt{margin-left:auto;font-size:12px;font-weight:600}
+.m .cnt{color:#67e8f9}.o .cnt{color:#cbd5e1}
+.cell{padding:10px 16px;min-height:42px;display:flex;align-items:center;border-top:1px solid rgba(30,41,59,.8);transition:background .15s}
+.cell.r{border-left:1px solid rgba(30,41,59,.8)}
+.cell.e0{background:rgba(2,6,23,.7)}.cell.e1{background:rgba(15,23,42,.6)}
+.cell:hover{background:rgba(8,51,68,.3)}
+.cell p{margin:0;line-height:1.35}
+.n{font-weight:600;color:#fff;font-size:13px}
+.d{font-weight:400;color:#94a3b8;font-size:12.5px}
+.dash{color:#334155}
+</style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel" data-presets="react">
-const { useMemo, useState } = React;
-
-const Icon = ({ children, className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
-);
-const Check = (p) => <Icon {...p}><polyline points="20 6 9 17 4 12" /></Icon>;
-const Copy = (p) => <Icon {...p}><rect x="8" y="8" width="14" height="14" rx="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></Icon>;
-const Cpu = (p) => <Icon {...p}><rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" /><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" /></Icon>;
-const Layers = (p) => <Icon {...p}><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></Icon>;
-
-const P = (id, name, category, m, o) => ({ id, name, category, mandatory: m.map(parse), optional: o.map(parse) });
-function parse(s) { const i = s.indexOf("|"); return i < 0 ? { name: s } : { name: s.slice(0, i), detail: s.slice(i + 1) }; }
-
-const PARTS = [
-  P("screws", "Screws & Threaded Fasteners", "Mechanical Components",
-    ["Fastener Type|e.g., Hex Bolt, Set Screw","Standard|e.g., ISO, DIN, ANSI, JIS","Thread Size|Diameter & Pitch / TPI","Length|End-to-end or under-head","Material|e.g., Carbon Steel, Brass, Nylon","Grade / Property Class|e.g., 8.8, Grade 5","Head Style|If no ISO/DIN standard is used","Drive Style|For screws or socket heads"],
-    ["Coating / Finish|e.g., Zinc Plated, Plain, Teflon","Thread Coverage|Fully vs. Partially Threaded","Thread Direction|Left-Hand Thread, if applicable","Point Style|e.g., Self-Drilling, Cup Point","Certifications & Compliance|e.g., RoHS, MTRs","Locking Features|e.g., Pre-applied threadlocker"]),
-  P("enclosures", "Device Enclosures & Housings", "Mechanical Components",
-    ["Enclosure Dimensions|L x W x H in mm","Material & Resin Grade|Polycarbonate, ABS, Extruded Al","Ingress Protection IP Rating|IP67, IP68, IP65","Mounting Style|DIN-rail, Wall Flange, Magnetic","Lid Fastening Method|Captive screws, Latches"],
-    ["Flammability Rating|UL 94 V-0","Outdoor UV Resistance|UL 746C f1","Gasket & Sealing Material|Silicone, PU Foam","Cutouts / Knockouts|SMA, Cable Gland, RJ45","Finish / RAL Color"]),
-  P("standoffs", "PCB Standoffs & Spacers", "Mechanical Components",
-    ["Thread Size|M2.5, M3, 4-40","Body Length / Clearance Height|5mm, 8mm, 10mm","Gender|Male-Female, Female-Female","Material|Nickel-plated Brass, Nylon 6/6"],
-    ["Male Stud Length","Hex Width A/F","Plating / Finish","RoHS / REACH"]),
-  P("gappads", "Thermal Interface Gap Pads", "Mechanical Components",
-    ["Thermal Conductivity|1.5 - 6.0 W/m·K","Thickness|0.5mm - 2.0mm","Dielectric Breakdown|>5 kV/mm","Dimensions|L x W"],
-    ["Durometer Hardness|30 Shore 00","Silicone-Free Acrylic|zero optical outgas","Operating Temp Range|-40°C to +150°C"]),
-  P("modems", "Cellular Wireless Modems", "Active Silicon",
-    ["Cellular Category|LTE-M, NB-IoT, Cat 1 bis, Cat 4, 5G RedCap","Target Geographic Bands|Global, NA B2/B4/B12, EMEA B3/B7/B20","Form Factor|LGA SMT, Mini PCIe, M.2","Host Interface|UART AT, USB 2.0 HS","Supply Voltage|3.3V - 4.3V"],
-    ["Integrated GNSS Receiver","Carrier Certifications|PTCRB, FCC, AT&T, Verizon","Sleep Current|PSM < 3.5µA","eSIM / eUICC Support"]),
-  P("mcu", "Microcontrollers & SoCs", "Active Silicon",
-    ["Core Family|Cortex-M4, Cortex-M33, ESP32, RISC-V","Internal Flash Size|256KB - 2MB for FOTA","Internal SRAM|64KB - 512KB","Package & Pinout|QFN-32, LQFP-48, BGA-64","Operating Voltage|1.8V - 3.6V"],
-    ["Peripherals|UART, SPI, I2C, CAN-FD, ADC channels","Deep Sleep Current|<1.5µA with RTC","Crypto Accelerator|AES-256, ECC for TLS 1.3"]),
-  P("pmic", "Power Management ICs / DC-DC", "Active Silicon",
-    ["Topology|Synchronous Buck, Boost, LDO","Input Voltage Range|4.5V - 36V industrial or 2.5V - 5.5V Li-ion","Output Voltage|Fixed 3.3V, 3.8V or Adj","Continuous & Peak Output Current|500mA - 3A peak","Package|SOT-23, DFN-6, QFN-16"],
-    ["Quiescent Current|<1µA Iq","Switching Frequency|1.2MHz, 2.1MHz","Protection|Thermal shutdown, UVLO"]),
-  P("mlcc", "Ceramic MLCC Capacitors", "Passive Components",
-    ["Capacitance|100nF, 10µF, 22µF","Rated DC Voltage|6.3V, 16V, 25V, 50V","Package Size|0402, 0603, 0805, 1206","Dielectric Type|X7R, X5R, C0G/NP0","Tolerance|±10%, ±20%, ±5%"],
-    ["Reel Packaging|7\" Tape & Reel","Automotive Qualification|AEC-Q200","DC Bias Derating","Termination Metallurgy"]),
-  P("resistors", "SMD Chip Resistors", "Passive Components",
-    ["Resistance Value|10k, 4.7k, 100k, 10mΩ shunt, 0Ω","Tolerance|±1%, ±0.1%, ±5%","Power Rating|1/16W, 1/10W, 1/8W, 1W","Package Size|0402, 0603, 0805, 2512"],
-    ["Temperature Coefficient TCR|±100ppm/°C, ±25ppm/°C","Technology|Thick Film vs Thin Film","AEC-Q200"]),
-  P("inductors", "Power Inductors", "Passive Components",
-    ["Inductance|1.0µH, 2.2µH, 4.7µH, 10µH","Saturation Current Isat|1.5A, 3.0A, 4.5A","Shielding Type|Molded Metal Composite, Fully Shielded","Footprint|2016, 2520, 4040"],
-    ["DC Resistance DCR Max|<35mΩ","SRF","AEC-Q200"]),
-  P("crystals", "Quartz Crystals & RTC", "Passive Components",
-    ["Nominal Frequency|32.768 kHz, 26.000 MHz, 32.000 MHz","Load Capacitance CL|6pF, 9pF, 12.5pF","Stability / Tolerance|±10ppm, ±20ppm, or ±0.5ppm TCXO","Package|2012, 2520, 3225","Type|Passive Crystal vs Active TCXO"],
-    ["ESR Max|<50kΩ for RTC","Drive Level|<0.5µW","Temp Range|-40°C to +85°C"]),
-  P("mems", "MEMS Motion Sensors", "Sensors",
-    ["Type & Axes|3-Axis Accelerometer vs 6-Axis IMU","Full-Scale Range|±2g / ±4g / ±8g / ±16g","Low-Power Sleep Current|<1µA wake-on-motion","Interface|I2C, SPI","Package|LGA-12, LGA-14"],
-    ["Interrupt Pins|INT1, INT2 for motion wake-up","FIFO Buffer Size","Operating Temp"]),
-  P("rfconn", "Micro-Coaxial RF Connectors", "Connectors",
-    ["Connector Standard|Hirose U.FL / I-PEX MHF I, MHF4, SMA Bulkhead, RP-SMA","Characteristic Impedance|50 Ω, up to 6 GHz","Mounting Style|SMT Receptacle vs Panel Mount with O-Ring"],
-    ["Mated Height|2.5mm Max, 1.4mm Max","IP67 Ingress Seal","Mating Durability Cycles|30 vs 500"]),
-  P("sim", "SIM Sockets & eSIM", "Connectors",
-    ["SIM Form Factor|Nano-SIM 4FF, Micro-SIM 3FF, Soldered eSIM MFF2","Ejection Style|Hinged Clamshell for vibration vs Push-Pull","Profile Height|1.35mm, 1.50mm, 2.50mm"],
-    ["Card Detect (CD) Switch|NO/NC","Gold Contact Plating","Industrial Temp"]),
-  P("batteries", "Primary & Rechargeable Lithium Batteries", "Power Storage",
-    ["Chemistry & Voltage|Li-SOCl2 3.6V primary vs Li-Po 3.7V rechargeable","Nominal Capacity|2700mAh AA, 8500mAh C, 2000mAh pouch","Dimensions|Max L x W x Thickness mm","Lead Termination|JST PH 2.0mm vs PCB Solder Pins","Protection Circuit|Integrated PCM for overcharge/discharge/short"],
-    ["Pulse Current Capability|Hybrid Pulse Capacitor HPC for 2A cellular pulses","NTC Thermistor Wire","UN 38.3 Safety Certification"]),
-  P("antennas", "Cellular & GNSS Antennas", "Antennas & RF",
-    ["Frequency Bands|Wideband 4G LTE 698-960 & 1710-2690 MHz, GNSS L1/L5","Form Factor|Internal Flex FPC vs Ceramic Patch vs External Whip","Connector & Cable Length|U.FL with 100mm micro-coax","Mounting Adhesive|3M 467MP"],
-    ["Active GNSS|integrated 28dB LNA vs Passive Patch","Patch Dimensions|25x25x4mm","Ground Plane Independence"]),
-  P("pcb", "Bare PCB Fabrication", "PCB Manufacturing",
-    ["Layer Count|4 Layers RF, 6 Layers, 2 Layers","Board Thickness|1.6mm ±10%, 1.0mm","Surface Finish|ENIG Electroless Nickel Immersion Gold mandatory for LGA/BGA","Laminate Tg|High-Tg FR-4 Tg ≥ 170°C for lead-free reflow","Controlled Impedance|50Ω single-ended, 90Ω differential pairs"],
-    ["Copper Weight|1 oz outer / 1 oz inner","Acceptance Standard|IPC-A-600 Class 2 / Class 3","Solder Mask Color"]),
-];
-const CATEGORIES = Array.from(new Set(PARTS.map((p) => p.category)));
-
-const Cell = ({ spec, index }) => (
-  <div className={`px-4 py-2.5 min-h-[42px] flex items-center transition-colors hover:bg-cyan-950/30 ${index % 2 === 0 ? "bg-slate-950/70" : "bg-slate-900/60"}`}>
-    {spec ? (
-      <p className="leading-snug">
-        <span className="font-semibold text-white text-[13px]">{spec.name}</span>
-        {spec.detail && <span className="text-slate-400 font-normal text-[12.5px]"> ({spec.detail})</span>}
-      </p>
-    ) : <span className="text-slate-700">—</span>}
+<div class="scrim"><div class="wrap">
+<header class="panel">
+  <div class="brand">
+    <div class="ico"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg></div>
+    <div><h1>Parts Specification Matrix</h1><p class="sub">IoT Engineering &amp; Procurement Checklist</p></div>
   </div>
-);
-
-function App() {
-  const [selectedId, setSelectedId] = useState(PARTS[0].id);
-  const [copied, setCopied] = useState(false);
-  const part = useMemo(() => PARTS.find((p) => p.id === selectedId) || PARTS[0], [selectedId]);
-  const maxRows = Math.max(part.mandatory.length, part.optional.length);
-
-  const handleCopy = async () => {
-    const fmt = (s) => `• ${s.name}${s.detail ? ` (${s.detail})` : ""}`;
-    const text = [
-      `${part.name} [${part.category}]`, "",
-      `MANDATORY SPECIFICATIONS (${part.mandatory.length})`, ...part.mandatory.map(fmt), "",
-      `OPTIONAL SPECIFICATIONS (${part.optional.length})`, ...part.optional.map(fmt),
-    ].join("\n");
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (e) { setCopied(false); }
-  };
-
-  return (
-    <div className="min-h-screen text-slate-200 bg-fixed bg-cover" style={{ backgroundColor: "#020617", backgroundImage: "linear-gradient(rgba(34,211,238,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.05) 1px, transparent 1px)", backgroundSize: "32px 32px" }}>
-      <div className="min-h-screen bg-slate-900/35">
-        <div className="max-w-6xl mx-auto px-4 py-6 sm:py-10 space-y-6">
-          <header className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-cyan-500/30 bg-slate-950/85 px-5 py-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-md border border-cyan-500/30 bg-slate-900/90"><Cpu className="w-5 h-5 text-cyan-400" /></div>
-              <div>
-                <h1 className="text-lg font-bold text-white leading-tight">Parts Specification Matrix</h1>
-                <p className="text-xs text-slate-400">IoT Engineering & Procurement Checklist</p>
-              </div>
-            </div>
-            <button onClick={handleCopy} className="inline-flex items-center gap-2 rounded-md border border-cyan-500/40 bg-slate-900/90 px-4 py-2 text-sm font-medium text-cyan-300 hover:bg-cyan-950/50 focus:outline-none focus:ring-2 focus:ring-cyan-400">
-              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              {copied ? "Copied!" : "Copy Specs"}
-            </button>
-          </header>
-
-          <section className="rounded-lg border border-cyan-500/30 bg-slate-950/85 p-5">
-            <label htmlFor="part-select" className="block text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-2">Select component</label>
-            <div className="flex flex-wrap items-center gap-3">
-              <select id="part-select" value={selectedId} onChange={(e) => setSelectedId(e.target.value)} className="flex-1 min-w-[260px] rounded-md border border-cyan-500/30 bg-slate-900 px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-400">
-                {CATEGORIES.map((cat) => (
-                  <optgroup key={cat} label={cat}>
-                    {PARTS.filter((p) => p.category === cat).map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-                  </optgroup>
-                ))}
-              </select>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/40 bg-cyan-950/40 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-cyan-300">
-                <Layers className="w-3.5 h-3.5" />{part.category}
-              </span>
-            </div>
-          </section>
-
-          <section className="rounded-lg border border-cyan-500/30 overflow-hidden bg-slate-950/85">
-            <div className="grid grid-cols-2">
-              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-slate-950 via-[#0c1f2a] to-slate-900 border-b border-cyan-500/30">
-                <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee]" />
-                <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">Mandatory Specifications</span>
-                <span className="text-cyan-400 text-[10px]">▼</span>
-                <span className="ml-auto text-xs font-semibold text-cyan-300">{part.mandatory.length}</span>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-slate-900 via-[#101b24] to-slate-950 border-b border-cyan-500/30 border-l border-slate-800/80">
-                <span className="w-2 h-2 rounded-full bg-slate-300" />
-                <span className="text-xs font-bold uppercase tracking-widest text-slate-300">Optional Specifications</span>
-                <span className="text-slate-400 text-[10px]">▼</span>
-                <span className="ml-auto text-xs font-semibold text-slate-300">{part.optional.length}</span>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 divide-y divide-slate-800/80">
-              {Array.from({ length: maxRows }).map((_, i) => (
-                <React.Fragment key={part.id + "-" + i}>
-                  <div><Cell spec={part.mandatory[i]} index={i} /></div>
-                  <div className="border-l border-slate-800/80"><Cell spec={part.optional[i]} index={i} /></div>
-                </React.Fragment>
-              ))}
-            </div>
-          </section>
-        </div>
-      </div>
-    </div>
-  );
+  <button id="copy" type="button"><span id="copyIcon"></span><span id="copyText">Copy Specs</span></button>
+</header>
+<section class="panel sel">
+  <label for="part">Select component</label>
+  <div class="row">
+    <select id="part"></select>
+    <span class="badge"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg><span id="cat"></span></span>
+  </div>
+</section>
+<section class="panel table">
+  <div class="grid">
+    <div class="th m"><span class="dot"></span><span class="tt">Mandatory Specifications</span><span class="car">&#9660;</span><span class="cnt" id="mc"></span></div>
+    <div class="th o"><span class="dot"></span><span class="tt">Optional Specifications</span><span class="car">&#9660;</span><span class="cnt" id="oc"></span></div>
+  </div>
+  <div class="grid" id="rows"></div>
+</section>
+</div></div>
+<script>
+var PARTS = [{"id":"screws","name":"Screws & Threaded Fasteners","category":"Mechanical Components","mandatory":[{"name":"Fastener Type","detail":"e.g., Hex Bolt, Set Screw"},{"name":"Standard","detail":"e.g., ISO, DIN, ANSI, JIS"},{"name":"Thread Size","detail":"Diameter & Pitch / TPI"},{"name":"Length","detail":"End-to-end or under-head"},{"name":"Material","detail":"e.g., Carbon Steel, Brass, Nylon"},{"name":"Grade / Property Class","detail":"e.g., 8.8, Grade 5"},{"name":"Head Style","detail":"If no ISO/DIN standard is used"},{"name":"Drive Style","detail":"For screws or socket heads"}],"optional":[{"name":"Coating / Finish","detail":"e.g., Zinc Plated, Plain, Teflon"},{"name":"Thread Coverage","detail":"Fully vs. Partially Threaded"},{"name":"Thread Direction","detail":"Left-Hand Thread, if applicable"},{"name":"Point Style","detail":"e.g., Self-Drilling, Cup Point"},{"name":"Certifications & Compliance","detail":"e.g., RoHS, MTRs"},{"name":"Locking Features","detail":"e.g., Pre-applied threadlocker"}]},{"id":"enclosures","name":"Device Enclosures & Housings","category":"Mechanical Components","mandatory":[{"name":"Enclosure Dimensions","detail":"L x W x H in mm"},{"name":"Material & Resin Grade","detail":"Polycarbonate, ABS, Extruded Al"},{"name":"Ingress Protection IP Rating","detail":"IP67, IP68, IP65"},{"name":"Mounting Style","detail":"DIN-rail, Wall Flange, Magnetic"},{"name":"Lid Fastening Method","detail":"Captive screws, Latches"}],"optional":[{"name":"Flammability Rating","detail":"UL 94 V-0"},{"name":"Outdoor UV Resistance","detail":"UL 746C f1"},{"name":"Gasket & Sealing Material","detail":"Silicone, PU Foam"},{"name":"Cutouts / Knockouts","detail":"SMA, Cable Gland, RJ45"},{"name":"Finish / RAL Color"}]},{"id":"standoffs","name":"PCB Standoffs & Spacers","category":"Mechanical Components","mandatory":[{"name":"Thread Size","detail":"M2.5, M3, 4-40"},{"name":"Body Length / Clearance Height","detail":"5mm, 8mm, 10mm"},{"name":"Gender","detail":"Male-Female, Female-Female"},{"name":"Material","detail":"Nickel-plated Brass, Nylon 6/6"}],"optional":[{"name":"Male Stud Length"},{"name":"Hex Width A/F"},{"name":"Plating / Finish"},{"name":"RoHS / REACH"}]},{"id":"gappads","name":"Thermal Interface Gap Pads","category":"Mechanical Components","mandatory":[{"name":"Thermal Conductivity","detail":"1.5 - 6.0 W/m·K"},{"name":"Thickness","detail":"0.5mm - 2.0mm"},{"name":"Dielectric Breakdown","detail":">5 kV/mm"},{"name":"Dimensions","detail":"L x W"}],"optional":[{"name":"Durometer Hardness","detail":"30 Shore 00"},{"name":"Silicone-Free Acrylic","detail":"zero optical outgas"},{"name":"Operating Temp Range","detail":"-40°C to +150°C"}]},{"id":"modems","name":"Cellular Wireless Modems","category":"Active Silicon","mandatory":[{"name":"Cellular Category","detail":"LTE-M, NB-IoT, Cat 1 bis, Cat 4, 5G RedCap"},{"name":"Target Geographic Bands","detail":"Global, NA B2/B4/B12, EMEA B3/B7/B20"},{"name":"Form Factor","detail":"LGA SMT, Mini PCIe, M.2"},{"name":"Host Interface","detail":"UART AT, USB 2.0 HS"},{"name":"Supply Voltage","detail":"3.3V - 4.3V"}],"optional":[{"name":"Integrated GNSS Receiver"},{"name":"Carrier Certifications","detail":"PTCRB, FCC, AT&T, Verizon"},{"name":"Sleep Current","detail":"PSM < 3.5µA"},{"name":"eSIM / eUICC Support"}]},{"id":"mcu","name":"Microcontrollers & SoCs","category":"Active Silicon","mandatory":[{"name":"Core Family","detail":"Cortex-M4, Cortex-M33, ESP32, RISC-V"},{"name":"Internal Flash Size","detail":"256KB - 2MB for FOTA"},{"name":"Internal SRAM","detail":"64KB - 512KB"},{"name":"Package & Pinout","detail":"QFN-32, LQFP-48, BGA-64"},{"name":"Operating Voltage","detail":"1.8V - 3.6V"}],"optional":[{"name":"Peripherals","detail":"UART, SPI, I2C, CAN-FD, ADC channels"},{"name":"Deep Sleep Current","detail":"<1.5µA with RTC"},{"name":"Crypto Accelerator","detail":"AES-256, ECC for TLS 1.3"}]},{"id":"pmic","name":"Power Management ICs / DC-DC","category":"Active Silicon","mandatory":[{"name":"Topology","detail":"Synchronous Buck, Boost, LDO"},{"name":"Input Voltage Range","detail":"4.5V - 36V industrial or 2.5V - 5.5V Li-ion"},{"name":"Output Voltage","detail":"Fixed 3.3V, 3.8V or Adj"},{"name":"Continuous & Peak Output Current","detail":"500mA - 3A peak"},{"name":"Package","detail":"SOT-23, DFN-6, QFN-16"}],"optional":[{"name":"Quiescent Current","detail":"<1µA Iq"},{"name":"Switching Frequency","detail":"1.2MHz, 2.1MHz"},{"name":"Protection","detail":"Thermal shutdown, UVLO"}]},{"id":"mlcc","name":"Ceramic MLCC Capacitors","category":"Passive Components","mandatory":[{"name":"Capacitance","detail":"100nF, 10µF, 22µF"},{"name":"Rated DC Voltage","detail":"6.3V, 16V, 25V, 50V"},{"name":"Package Size","detail":"0402, 0603, 0805, 1206"},{"name":"Dielectric Type","detail":"X7R, X5R, C0G/NP0"},{"name":"Tolerance","detail":"±10%, ±20%, ±5%"}],"optional":[{"name":"Reel Packaging","detail":"7\" Tape & Reel"},{"name":"Automotive Qualification","detail":"AEC-Q200"},{"name":"DC Bias Derating"},{"name":"Termination Metallurgy"}]},{"id":"resistors","name":"SMD Chip Resistors","category":"Passive Components","mandatory":[{"name":"Resistance Value","detail":"10k, 4.7k, 100k, 10mΩ shunt, 0Ω"},{"name":"Tolerance","detail":"±1%, ±0.1%, ±5%"},{"name":"Power Rating","detail":"1/16W, 1/10W, 1/8W, 1W"},{"name":"Package Size","detail":"0402, 0603, 0805, 2512"}],"optional":[{"name":"Temperature Coefficient TCR","detail":"±100ppm/°C, ±25ppm/°C"},{"name":"Technology","detail":"Thick Film vs Thin Film"},{"name":"AEC-Q200"}]},{"id":"inductors","name":"Power Inductors","category":"Passive Components","mandatory":[{"name":"Inductance","detail":"1.0µH, 2.2µH, 4.7µH, 10µH"},{"name":"Saturation Current Isat","detail":"1.5A, 3.0A, 4.5A"},{"name":"Shielding Type","detail":"Molded Metal Composite, Fully Shielded"},{"name":"Footprint","detail":"2016, 2520, 4040"}],"optional":[{"name":"DC Resistance DCR Max","detail":"<35mΩ"},{"name":"SRF"},{"name":"AEC-Q200"}]},{"id":"crystals","name":"Quartz Crystals & RTC","category":"Passive Components","mandatory":[{"name":"Nominal Frequency","detail":"32.768 kHz, 26.000 MHz, 32.000 MHz"},{"name":"Load Capacitance CL","detail":"6pF, 9pF, 12.5pF"},{"name":"Stability / Tolerance","detail":"±10ppm, ±20ppm, or ±0.5ppm TCXO"},{"name":"Package","detail":"2012, 2520, 3225"},{"name":"Type","detail":"Passive Crystal vs Active TCXO"}],"optional":[{"name":"ESR Max","detail":"<50kΩ for RTC"},{"name":"Drive Level","detail":"<0.5µW"},{"name":"Temp Range","detail":"-40°C to +85°C"}]},{"id":"mems","name":"MEMS Motion Sensors","category":"Sensors","mandatory":[{"name":"Type & Axes","detail":"3-Axis Accelerometer vs 6-Axis IMU"},{"name":"Full-Scale Range","detail":"±2g / ±4g / ±8g / ±16g"},{"name":"Low-Power Sleep Current","detail":"<1µA wake-on-motion"},{"name":"Interface","detail":"I2C, SPI"},{"name":"Package","detail":"LGA-12, LGA-14"}],"optional":[{"name":"Interrupt Pins","detail":"INT1, INT2 for motion wake-up"},{"name":"FIFO Buffer Size"},{"name":"Operating Temp"}]},{"id":"rfconn","name":"Micro-Coaxial RF Connectors","category":"Connectors","mandatory":[{"name":"Connector Standard","detail":"Hirose U.FL / I-PEX MHF I, MHF4, SMA Bulkhead, RP-SMA"},{"name":"Characteristic Impedance","detail":"50 Ω, up to 6 GHz"},{"name":"Mounting Style","detail":"SMT Receptacle vs Panel Mount with O-Ring"}],"optional":[{"name":"Mated Height","detail":"2.5mm Max, 1.4mm Max"},{"name":"IP67 Ingress Seal"},{"name":"Mating Durability Cycles","detail":"30 vs 500"}]},{"id":"sim","name":"SIM Sockets & eSIM","category":"Connectors","mandatory":[{"name":"SIM Form Factor","detail":"Nano-SIM 4FF, Micro-SIM 3FF, Soldered eSIM MFF2"},{"name":"Ejection Style","detail":"Hinged Clamshell for vibration vs Push-Pull"},{"name":"Profile Height","detail":"1.35mm, 1.50mm, 2.50mm"}],"optional":[{"name":"Card Detect (CD) Switch","detail":"NO/NC"},{"name":"Gold Contact Plating"},{"name":"Industrial Temp"}]},{"id":"batteries","name":"Primary & Rechargeable Lithium Batteries","category":"Power Storage","mandatory":[{"name":"Chemistry & Voltage","detail":"Li-SOCl2 3.6V primary vs Li-Po 3.7V rechargeable"},{"name":"Nominal Capacity","detail":"2700mAh AA, 8500mAh C, 2000mAh pouch"},{"name":"Dimensions","detail":"Max L x W x Thickness mm"},{"name":"Lead Termination","detail":"JST PH 2.0mm vs PCB Solder Pins"},{"name":"Protection Circuit","detail":"Integrated PCM for overcharge/discharge/short"}],"optional":[{"name":"Pulse Current Capability","detail":"Hybrid Pulse Capacitor HPC for 2A cellular pulses"},{"name":"NTC Thermistor Wire"},{"name":"UN 38.3 Safety Certification"}]},{"id":"antennas","name":"Cellular & GNSS Antennas","category":"Antennas & RF","mandatory":[{"name":"Frequency Bands","detail":"Wideband 4G LTE 698-960 & 1710-2690 MHz, GNSS L1/L5"},{"name":"Form Factor","detail":"Internal Flex FPC vs Ceramic Patch vs External Whip"},{"name":"Connector & Cable Length","detail":"U.FL with 100mm micro-coax"},{"name":"Mounting Adhesive","detail":"3M 467MP"}],"optional":[{"name":"Active GNSS","detail":"integrated 28dB LNA vs Passive Patch"},{"name":"Patch Dimensions","detail":"25x25x4mm"},{"name":"Ground Plane Independence"}]},{"id":"pcb","name":"Bare PCB Fabrication","category":"PCB Manufacturing","mandatory":[{"name":"Layer Count","detail":"4 Layers RF, 6 Layers, 2 Layers"},{"name":"Board Thickness","detail":"1.6mm ±10%, 1.0mm"},{"name":"Surface Finish","detail":"ENIG Electroless Nickel Immersion Gold mandatory for LGA/BGA"},{"name":"Laminate Tg","detail":"High-Tg FR-4 Tg ≥ 170°C for lead-free reflow"},{"name":"Controlled Impedance","detail":"50Ω single-ended, 90Ω differential pairs"}],"optional":[{"name":"Copper Weight","detail":"1 oz outer / 1 oz inner"},{"name":"Acceptance Standard","detail":"IPC-A-600 Class 2 / Class 3"},{"name":"Solder Mask Color"}]}];
+var ICON_COPY='<svg viewBox="0 0 24 24"><rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+var ICON_CHECK='<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+var sel=document.getElementById('part'), current=PARTS[0], timer=null;
+function el(t,c,txt){var e=document.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e;}
+var cats=[];PARTS.forEach(function(p){if(cats.indexOf(p.category)<0)cats.push(p.category);});
+cats.forEach(function(c){var g=document.createElement('optgroup');g.label=c;
+  PARTS.filter(function(p){return p.category===c;}).forEach(function(p){var o=document.createElement('option');o.value=p.id;o.textContent=p.name;g.appendChild(o);});
+  sel.appendChild(g);});
+function cell(spec,i,right){
+  var c=el('div','cell e'+(i%2)+(right?' r':''));
+  if(spec){var p=el('p');p.appendChild(el('span','n',spec.name));
+    if(spec.detail)p.appendChild(el('span','d',' ('+spec.detail+')'));c.appendChild(p);}
+  else c.appendChild(el('span','dash','\u2014'));
+  return c;}
+function render(){
+  current=PARTS.filter(function(p){return p.id===sel.value;})[0]||PARTS[0];
+  var max=Math.max(current.mandatory.length,current.optional.length);
+  document.getElementById('cat').textContent=current.category;
+  document.getElementById('mc').textContent=current.mandatory.length;
+  document.getElementById('oc').textContent=current.optional.length;
+  var rows=document.getElementById('rows');rows.innerHTML='';
+  for(var i=0;i<max;i++){rows.appendChild(cell(current.mandatory[i],i,false));rows.appendChild(cell(current.optional[i],i,true));}
 }
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+sel.addEventListener('change',render);
+function fmt(s){return '\u2022 '+s.name+(s.detail?' ('+s.detail+')':'');}
+function fallbackCopy(t){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(a);}
+function setBtn(done){document.getElementById('copyIcon').innerHTML=done?ICON_CHECK:ICON_COPY;document.getElementById('copyText').textContent=done?'Copied!':'Copy Specs';}
+document.getElementById('copy').addEventListener('click',function(){
+  var text=[current.name+' ['+current.category+']','','MANDATORY SPECIFICATIONS ('+current.mandatory.length+')'].concat(current.mandatory.map(fmt),['','OPTIONAL SPECIFICATIONS ('+current.optional.length+')'],current.optional.map(fmt)).join('\n');
+  function ok(){setBtn(true);clearTimeout(timer);timer=setTimeout(function(){setBtn(false);},2000);}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(ok,function(){fallbackCopy(text);ok();});}
+  else{fallbackCopy(text);ok();}
+});
+setBtn(false);render();
 </script>
 </body>
 </html>
